@@ -3,8 +3,9 @@ Django settings for youtube_bff project.
 Updated for YouTube Clone BFF API
 """
 
-from pathlib import Path
 import os
+from pathlib import Path
+from decouple import config
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -14,12 +15,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-+lqow4j9k341##$m(u=b^*bo34vk85$4pap=z5$0*7b1i79kc5'
+SECRET_KEY = config('SECRET_KEY', default='django-insecure-your-secret-key-here')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = config('DEBUG', default=True, cast=bool)
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', '0.0.0.0']
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -125,7 +126,7 @@ STATICFILES_DIRS = [
     os.path.join(BASE_DIR.parent.parent, 'static'),  # Points to root/static/
 ]
 
-# Media files (for uploaded content)
+# Media files (for uploaded content) - Use MEDIA_ROOT for uploaded files
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
@@ -156,7 +157,28 @@ REST_FRAMEWORK = {
     ],
     'DEFAULT_PARSER_CLASSES': [
         'rest_framework.parsers.JSONParser',
+        'rest_framework.parsers.MultiPartParser',  # For file uploads
+        'rest_framework.parsers.FormParser',       # For form data
     ],
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 20
 }
+
+# File Upload Settings
+FILE_UPLOAD_MAX_MEMORY_SIZE = 100 * 1024 * 1024  # 100MB
+DATA_UPLOAD_MAX_MEMORY_SIZE = 100 * 1024 * 1024  # 100MB
+
+# Video Upload Configuration
+MAX_VIDEO_SIZE = 500 * 1024 * 1024  # 500MB max video size
+ALLOWED_VIDEO_EXTENSIONS = ['.mp4', '.avi', '.mov', '.wmv', '.flv', '.webm']
+ALLOWED_IMAGE_EXTENSIONS = ['.jpg', '.jpeg', '.png', '.gif', '.webp']
+
+# Video storage paths - Use MEDIA_ROOT for uploaded files
+VIDEO_UPLOAD_PATH = os.path.join(MEDIA_ROOT, 'videos')
+THUMBNAIL_UPLOAD_PATH = os.path.join(MEDIA_ROOT, 'thumbnails')
+
+# Ensure directories exist
+os.makedirs(VIDEO_UPLOAD_PATH, exist_ok=True)
+os.makedirs(THUMBNAIL_UPLOAD_PATH, exist_ok=True)
+os.makedirs(os.path.join(BASE_DIR.parent.parent, 'static', 'videos'), exist_ok=True)
+os.makedirs(os.path.join(BASE_DIR.parent.parent, 'static', 'thumbnails'), exist_ok=True)

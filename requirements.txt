@@ -3,3 +3,7 @@ djangorestframework>=3.14.0
 django-cors-headers>=4.3.0
 Pillow>=10.0.0
 python-decouple>=3.8.0
+# New dependencies for video handling
+django-cleanup>=6.0.0  # Automatic cleanup of old files
+python-magic>=0.4.27   # File type detection
+ffmpeg-python>=0.2.0   # Video processing (optional)
